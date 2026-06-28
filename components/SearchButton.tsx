@@ -1,6 +1,7 @@
 'use client'
 
 import { useSearch } from '@/components/search/SearchProvider'
+import { Button } from '@/components/ui/button'
 import { Search } from 'lucide-react'
 import siteMetadata from '@/data/siteMetadata'
 
@@ -9,13 +10,14 @@ const SearchButton = () => {
 
   if (siteMetadata.search?.provider === 'kbar') {
     return (
-      <button aria-label="Search" onClick={openSearch} type="button">
+      <Button aria-label="Search" onClick={openSearch} size="icon-lg" type="button" variant="ghost">
         <Search
           aria-hidden="true"
-          className="hover:text-primary-500 dark:hover:text-primary-400 h-6 w-6 text-gray-900 dark:text-gray-100"
+          className="group-hover/button:text-primary-500 dark:group-hover/button:text-primary-400 text-gray-900 transition-colors dark:text-gray-100"
           strokeWidth={1.5}
         />
-      </button>
+        <span className="sr-only">Search</span>
+      </Button>
     )
   }
 

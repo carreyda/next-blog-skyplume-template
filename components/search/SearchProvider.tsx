@@ -1,7 +1,18 @@
 'use client'
 
+import { filterSearchDocuments } from '@/lib/search/core.mjs'
 import { formatDate } from '@/lib/content/format-date.mjs'
-import { Search, X } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { AlertCircle, ArrowRight, FileText, Loader2, Search } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import {
   createContext,
@@ -51,15 +62,6 @@ function getSearchUrl(searchDocumentsPath?: string) {
     return searchDocumentsPath
   }
   return new URL(searchDocumentsPath, window.location.origin).toString()
-}
-
-function matchesQuery(document: SearchDocument, query: string) {
-  const haystack = [document.title, document.summary, document.path, ...(document.tags || [])]
-    .filter(Boolean)
-    .join(' ')
-    .toLowerCase()
-
-  return haystack.includes(query.toLowerCase())
 }
 
 export function SearchProvider({
@@ -153,8 +155,7 @@ export function SearchProvider({
   }, [hasLoaded, isOpen, searchDocumentsPath])
 
   const results = useMemo(() => {
-    if (!query.trim()) return documents.slice(0, 8)
-    return documents.filter((document) => matchesQuery(document, query)).slice(0, 8)
+    return filterSearchDocuments(documents, query)
   }, [documents, query])
 
   const onSelect = (document: SearchDocument) => {
@@ -162,85 +163,226 @@ export function SearchProvider({
     router.push(`/${document.path}`)
   }
 
+  const resultLabel = query.trim()
+    ? `${results.length} result${results.length === 1 ? '' : 's'}`
+    : 'Recent posts'
+  const hasSearchConfig = Boolean(searchDocumentsPath)
+
   return (
     <SearchContext.Provider value={{ openSearch }}>
       {children}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-80 bg-black/30 px-4 py-20 backdrop-blur-sm"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) closeSearch()
-          }}
-        >
-          <div
-            aria-modal="true"
-            className="mx-auto max-w-2xl overflow-hidden rounded-md border border-gray-200 bg-white shadow-lg dark:border-gray-800 dark:bg-gray-950"
-            role="dialog"
-          >
-            <div className="flex items-center gap-3 border-b border-gray-200 px-4 py-3 dark:border-gray-800">
-              <Search aria-hidden="true" className="h-5 w-5 text-gray-400" />
-              <label className="sr-only" htmlFor="site-search-input">
-                Search posts
-              </label>
-              <input
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (open) {
+            openSearch()
+          } else {
+            closeSearch()
+          }
+        }}
+      >
+        <DialogContent className="top-6 grid max-h-[calc(100dvh-3rem)] w-[min(calc(100%-1rem),44rem)] translate-y-0 gap-0 overflow-hidden rounded-xl border-gray-200 bg-white p-0 shadow-[0_16px_48px_rgba(15,23,42,0.16)] sm:top-16 sm:w-[min(calc(100%-2rem),44rem)] dark:border-gray-800 dark:bg-gray-950 dark:shadow-[0_16px_48px_rgba(0,0,0,0.42)]">
+          <DialogHeader className="border-b border-gray-200 px-4 pt-5 pb-4 text-left sm:px-5 dark:border-gray-800">
+            <div className="flex items-center gap-3 pr-8">
+              <span className="bg-primary-50 text-primary-700 ring-primary-100 dark:bg-primary-950 dark:text-primary-300 dark:ring-primary-800 flex size-9 shrink-0 items-center justify-center rounded-lg ring-1">
+                <Search aria-hidden="true" className="size-4" strokeWidth={1.7} />
+              </span>
+              <div className="min-w-0">
+                <DialogTitle className="text-base leading-6 font-semibold text-gray-950 dark:text-gray-50">
+                  Search the archive
+                </DialogTitle>
+                <DialogDescription className="text-sm text-gray-600 dark:text-gray-400">
+                  Find posts by title, path, summary, or tag.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="border-b border-gray-200 p-4 sm:p-5 dark:border-gray-800">
+            <label className="sr-only" htmlFor="site-search-input">
+              Search posts
+            </label>
+            <div className="relative">
+              <Search
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-500 dark:text-gray-400"
+                strokeWidth={1.7}
+              />
+              <Input
                 ref={inputRef}
                 id="site-search-input"
-                className="min-w-0 flex-1 bg-transparent text-base text-gray-950 outline-none placeholder:text-gray-500 dark:text-gray-50 dark:placeholder:text-gray-400"
+                aria-describedby="site-search-help"
+                className="h-11 rounded-lg border-gray-300 bg-gray-50 pr-3 pl-9 text-base shadow-none placeholder:text-gray-500 focus-visible:bg-white dark:border-gray-800 dark:bg-gray-900/80 dark:placeholder:text-gray-400 dark:focus-visible:bg-gray-950"
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search posts"
+                placeholder="Search posts, tags, or notes"
                 type="search"
                 value={query}
               />
-              <button
-                aria-label="Close search"
-                className="hover:text-primary-500 dark:hover:text-primary-400 rounded-sm p-1 text-gray-500"
-                onClick={closeSearch}
-                type="button"
-              >
-                <X aria-hidden="true" className="h-5 w-5" />
-              </button>
             </div>
-
-            <div className="max-h-[60vh] overflow-y-auto py-2">
-              {(isLoading || (!hasLoaded && !error)) && (
-                <p className="px-4 py-6 text-sm text-gray-500 dark:text-gray-400">
-                  Loading search index...
-                </p>
-              )}
-              {error && <p className="px-4 py-6 text-sm text-red-600 dark:text-red-400">{error}</p>}
-              {hasLoaded && !isLoading && !error && results.length === 0 && (
-                <p className="px-4 py-6 text-sm text-gray-500 dark:text-gray-400">
-                  No posts found.
-                </p>
-              )}
-              {hasLoaded &&
-                !isLoading &&
-                !error &&
-                results.map((document) => (
-                  <button
-                    className="hover:bg-primary-50 focus:bg-primary-50 block w-full px-4 py-3 text-left outline-none dark:hover:bg-gray-900 dark:focus:bg-gray-900"
-                    key={document.path}
-                    onClick={() => onSelect(document)}
-                    type="button"
-                  >
-                    <span className="block text-sm font-semibold text-gray-950 dark:text-gray-50">
-                      {document.title}
-                    </span>
-                    <span className="mt-1 block text-xs text-gray-500 dark:text-gray-400">
-                      {document.date ? formatDate(document.date, 'en-US') : document.path}
-                    </span>
-                    {document.summary && (
-                      <span className="mt-2 line-clamp-2 block text-sm text-gray-600 dark:text-gray-300">
-                        {document.summary}
-                      </span>
-                    )}
-                  </button>
-                ))}
+            <div
+              className="mt-3 flex flex-col gap-2 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between dark:text-gray-400"
+              id="site-search-help"
+            >
+              <span>{resultLabel}</span>
+              <span className="hidden sm:inline">Press Esc to close</span>
             </div>
           </div>
-        </div>
-      )}
+
+          <div className="max-h-[min(60dvh,30rem)] overflow-y-auto p-2" aria-live="polite">
+            {!hasSearchConfig && (
+              <SearchState
+                icon={<AlertCircle aria-hidden="true" className="size-4" />}
+                title="Search is not configured"
+                description="Add a search document path to enable local search."
+              />
+            )}
+
+            {hasSearchConfig && (isLoading || (!hasLoaded && !error)) && <SearchLoadingRows />}
+
+            {hasSearchConfig && error && (
+              <SearchState
+                icon={<AlertCircle aria-hidden="true" className="size-4" />}
+                title="Search index failed to load"
+                description={error}
+              />
+            )}
+
+            {hasSearchConfig && hasLoaded && !isLoading && !error && results.length === 0 && (
+              <SearchState
+                icon={<Search aria-hidden="true" className="size-4" />}
+                title="No posts found"
+                description="Try a broader title, tag, or topic."
+              />
+            )}
+
+            {hasSearchConfig &&
+              hasLoaded &&
+              !isLoading &&
+              !error &&
+              results.map((document) => (
+                <SearchResultButton
+                  document={document}
+                  key={document.path}
+                  onSelect={() => onSelect(document)}
+                />
+              ))}
+          </div>
+
+          <div className="flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-3 text-xs text-gray-500 dark:border-gray-800 dark:bg-gray-900/70 dark:text-gray-400">
+            <span>Local index</span>
+            <span>
+              {documents.length ? `${documents.length} posts indexed` : 'Ready on first open'}
+            </span>
+          </div>
+        </DialogContent>
+      </Dialog>
     </SearchContext.Provider>
+  )
+}
+
+function SearchLoadingRows() {
+  return (
+    <div className="space-y-1 p-1">
+      {[0, 1, 2].map((item) => (
+        <div
+          className="flex gap-3 rounded-lg px-3 py-3"
+          key={item}
+          aria-label="Loading search result"
+        >
+          <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md bg-gray-100 dark:bg-gray-900">
+            <Loader2
+              aria-hidden="true"
+              className="size-4 animate-spin text-gray-400 dark:text-gray-500"
+              strokeWidth={1.7}
+            />
+          </div>
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="h-4 w-2/3 rounded bg-gray-100 dark:bg-gray-900" />
+            <div className="h-3 w-1/3 rounded bg-gray-100 dark:bg-gray-900" />
+            <div className="h-3 w-full rounded bg-gray-100 dark:bg-gray-900" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function SearchState({
+  icon,
+  title,
+  description,
+}: {
+  icon: ReactNode
+  title: string
+  description: string
+}) {
+  return (
+    <div className="px-4 py-10 text-center">
+      <div className="mx-auto flex size-9 items-center justify-center rounded-lg bg-gray-100 text-gray-600 dark:bg-gray-900 dark:text-gray-300">
+        {icon}
+      </div>
+      <p className="mt-3 text-sm font-semibold text-gray-950 dark:text-gray-50">{title}</p>
+      <p className="mx-auto mt-1 max-w-sm text-sm leading-6 text-gray-600 dark:text-gray-400">
+        {description}
+      </p>
+    </div>
+  )
+}
+
+function SearchResultButton({
+  document,
+  onSelect,
+}: {
+  document: SearchDocument
+  onSelect: () => void
+}) {
+  const tags = (document.tags || []).slice(0, 2)
+
+  return (
+    <Button
+      className="group/result hover:bg-primary-50 focus-visible:bg-primary-50 h-auto w-full justify-start rounded-lg px-3 py-3 text-left whitespace-normal dark:hover:bg-gray-900 dark:focus-visible:bg-gray-900"
+      onClick={onSelect}
+      type="button"
+      variant="ghost"
+    >
+      <span className="flex w-full min-w-0 gap-3">
+        <span className="group-hover/result:text-primary-700 dark:group-hover/result:text-primary-300 mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-colors group-hover/result:bg-white dark:bg-gray-900 dark:text-gray-300 dark:group-hover/result:bg-gray-800">
+          <FileText aria-hidden="true" className="size-4" strokeWidth={1.7} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="flex min-w-0 items-start justify-between gap-3">
+            <span className="min-w-0 text-sm leading-6 font-semibold text-gray-950 dark:text-gray-50">
+              {document.title}
+            </span>
+            <ArrowRight
+              aria-hidden="true"
+              className="mt-1 size-4 shrink-0 text-gray-400 opacity-0 transition group-hover/result:translate-x-0.5 group-hover/result:opacity-100 dark:text-gray-500"
+              strokeWidth={1.7}
+            />
+          </span>
+          <span className="mt-0.5 block text-xs leading-5 text-gray-500 dark:text-gray-400">
+            {document.date ? formatDate(document.date, 'en-US') : document.path}
+          </span>
+          {document.summary && (
+            <span className="mt-2 line-clamp-2 block text-sm leading-6 text-gray-600 dark:text-gray-300">
+              {document.summary}
+            </span>
+          )}
+          {tags.length > 0 && (
+            <span className="mt-2 flex min-w-0 flex-wrap gap-1.5">
+              {tags.map((tag) => (
+                <Badge
+                  className="bg-gray-50 text-gray-600 ring-1 ring-gray-200 dark:bg-gray-900 dark:text-gray-300 dark:ring-gray-800"
+                  key={tag}
+                  variant="secondary"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </span>
+          )}
+        </span>
+      </span>
+    </Button>
   )
 }
