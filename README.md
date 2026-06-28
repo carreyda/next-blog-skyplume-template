@@ -1,19 +1,92 @@
-# nextjs-blog-skyplume-template
+# Skyplume Blog Template
 
-A clean, content-first Next.js blog template for personal sites, engineering notes, project write-ups, and long-form MDX publishing.
+> A refined, content-first Next.js blog template for personal publishing, engineering notes, project journals, and long-form MDX writing.
 
-It is based on a real production blog setup and keeps the useful parts: App Router, Contentlayer-powered MDX, Tailwind CSS, dark mode, local search, RSS, sitemap, tags, code highlighting, and optional Giscus comments.
+[简体中文](./README.zh-CN.md)
 
-## Features
+Skyplume is an open-source blog template extracted from [Ruoduan](https://www.0x1ai.com/)'s personal blog at [0x1ai.com](https://www.0x1ai.com/). It keeps the parts that matter for a serious personal site: fast pages, clean typography, strong SEO defaults, MDX authoring, RSS, sitemap, local search, tags, dark mode, animated details, and an architecture that is easy to customize.
 
-- Next.js 15 App Router with TypeScript and React 19
-- MDX posts from `data/blog` powered by Contentlayer
-- Tags, pagination, reading time, table of contents, and SEO metadata
-- Local search index generated at build time
-- RSS feed, sitemap, robots, and Open Graph defaults
-- Tailwind CSS 4 styling with dark mode
-- Optional Giscus comments via environment variables
-- Static export support through `EXPORT=true`
+## Highlights
+
+- Built with Next.js 15 App Router, React 19, TypeScript, Tailwind CSS 4, and Contentlayer
+- MDX-first writing flow with front matter, reading time, table of contents, code highlighting, math, citations, alerts, images, iframes, and custom components
+- SEO-ready metadata, Open Graph cards, Twitter cards, JSON-LD for posts, canonical URL support, sitemap, robots, and RSS feed
+- Build-time local search index powered by `pliny`
+- Tags, pagination, author profiles, projects page, about page, and optional Giscus comments
+- Dark mode with system preference support
+- Subtle motion: route transitions, hero reveal, scroll reveal, feed item reveal, hover states, and a top progress bar
+- Security-conscious Next.js headers, long-term static asset caching, and static export support
+- Tuned for Lighthouse triple 100 scores on the baseline template: Performance, Best Practices, and SEO
+
+## Design Philosophy
+
+Skyplume is designed for reading before decoration. The interface uses restrained spacing, sharp typography, quiet borders, and focused article layouts so the writing stays in front. Motion is intentionally short and lightweight: it gives navigation and lists a sense of polish without turning the blog into an animation demo.
+
+The template is also meant to be owned. Most customization starts in plain data files, MDX files, and small React components instead of a large CMS or hidden configuration layer.
+
+## Theme Color
+
+Skyplume uses a Mineral Teal palette: a low-chroma, lab-grade teal paired with teal-tinted neutrals. Body text, lists, borders, and content surfaces stay in quiet gray scales so long-form reading remains stable. The primary color is reserved for links, focus states, the progress bar, tags, and important interactive states.
+
+The color system follows three principles:
+
+- Reading first: gray scales carry the article, lists, and metadata without visual noise.
+- Laboratory character: Mineral Teal appears like an instrument indicator, giving the site a memorable technical identity.
+- Dark-mode stability: deep teal-gray backgrounds and lighter primary accents keep hover states, links, and code details clear without becoming harsh.
+
+## Feature Overview
+
+| Area              | What is included                                                                                                                           |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Publishing        | MDX posts from `data/blog`, drafts, summaries, images, categories, tags, authors, reading time, table of contents                          |
+| Content rendering | GitHub-flavored Markdown, math via KaTeX, citations, code titles, syntax highlighting, heading anchors, custom images and iframes          |
+| Navigation        | Home feed, blog index, pagination, tag pages, projects page, about page, previous/next post links                                          |
+| SEO               | App Router metadata, per-page metadata helper, Open Graph, Twitter cards, JSON-LD `BlogPosting`, canonical URL field, sitemap, robots, RSS |
+| Discovery         | Build-time `search.json`, RSS feed, tag counts, structured archive pages                                                                   |
+| UX                | Responsive layout, dark mode, local search, comments, scroll-to-top/comment shortcut, progress bar                                         |
+| Performance       | Static generation, Contentlayer build output, optimized font loading, cache headers for static assets, optional static export              |
+| Security          | CSP, referrer policy, frame protection, content-type protection, HSTS, permissions policy                                                  |
+
+## SEO and Lighthouse
+
+Skyplume ships with practical SEO foundations instead of afterthought meta tags:
+
+- Site-wide metadata in `app/layout.tsx`
+- Page metadata through `app/seo.tsx`
+- Article metadata in `app/blog/[...slug]/page.tsx`
+- JSON-LD `BlogPosting` data generated from MDX front matter
+- `sitemap.xml` from static routes and published posts
+- `robots.txt` with sitemap discovery
+- `feed.xml` generated after build
+- Open Graph and Twitter image defaults through `data/siteMetadata.js`
+- Clean article summaries for cards, feeds, and search snippets
+
+The baseline template has been tuned to reach Lighthouse 100/100/100 for Performance, Best Practices, and SEO. Your final scores still depend on deployed content, third-party scripts, images, analytics, comments, and hosting configuration, so rerun Lighthouse after customization.
+
+![Lighthouse scores showing 100 for Performance, Best Practices, and SEO](intro/lighthouse.png)
+
+## Animation Details
+
+The motion system is intentionally small:
+
+- `PageTransition` gives route changes a short fade-and-lift transition
+- `ProgressBar` provides lightweight navigation feedback
+- `LabHero` uses staggered reveal for the first screen
+- `PostFeed` reveals posts as they enter the viewport
+- `ScrollReveal` is available for page sections
+- `css/animations.css` keeps keyframes centralized and easy to adjust
+
+## Tech Stack
+
+- Next.js 15 App Router
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Contentlayer 2
+- MDX
+- Pliny utilities
+- Giscus comments
+- Yarn
 
 ## Quick Start
 
@@ -22,7 +95,7 @@ yarn install
 yarn dev
 ```
 
-Open http://localhost:3000.
+Open <http://localhost:3000>.
 
 ## Configure Your Site
 
@@ -32,8 +105,11 @@ Edit these files first:
 - `data/profile.ts`: about page profile, links, skills, and template guide content
 - `data/authors/default.mdx`: default author metadata and biography
 - `data/headerNavLinks.ts`: top navigation
+- `data/projectsData.ts`: projects page content
 - `public/static/images/skyplume-card.svg`: social sharing image
 - `public/static/favicons/favicon.svg`: favicon
+
+For comments, copy `.env.example` to `.env.local` and fill the Giscus values. To disable comments, set `comments.provider` to an empty string in `data/siteMetadata.js`.
 
 ## Write Posts
 
@@ -63,50 +139,43 @@ Place post images under `public/static/blog/<post-slug>` and reference them like
 ![Screenshot](/static/blog/my-first-post/screenshot.png)
 ```
 
-This template keeps one example post: `data/blog/term-proxy.mdx`.
+This template includes one example post: `data/blog/term-proxy.mdx`.
 
-## Comments
-
-Comments use Giscus and are optional. Copy `.env.example` to `.env.local`, fill the Giscus values, and keep `comments.provider` set to `'giscus'` in `data/siteMetadata.js`.
-
-To disable comments, set:
-
-```js
-comments: {
-  provider: '',
-}
-```
-
-## Build
+## Available Scripts
 
 ```bash
-yarn build
-yarn serve
+yarn dev       # Start local development
+yarn build     # Build Next.js and generate RSS output
+yarn serve     # Serve the production build
+yarn analyze   # Run the bundle analyzer
+yarn lint      # Lint app, components, layouts, and scripts
 ```
 
-The build generates Contentlayer data, tag counts, local search, sitemap, and RSS output.
+## Static Export
 
-## Deploy
-
-Deploy to Vercel for the simplest path. Set `siteMetadata.siteUrl` to your production URL before publishing.
-
-For static export:
+Skyplume can be exported as static files:
 
 ```bash
 EXPORT=true UNOPTIMIZED=true yarn build
 ```
 
+Use `BASE_PATH` if deploying under a subpath.
+
 ## Project Structure
 
 ```text
-app/                 App Router pages and metadata
-components/          UI components and page sections
-data/                Site metadata, authors, profile, posts
-layouts/             Blog list and post layouts
+app/                 App Router pages, metadata, sitemap, robots
+components/          Shared UI, MDX components, search, theme, motion
+data/                Site metadata, authors, profile, projects, posts
+layouts/             Blog post and list layouts
 public/static/       Images, favicons, and post assets
 scripts/             RSS and post-build scripts
-css/                 Tailwind and syntax highlighting styles
+css/                 Tailwind, syntax highlighting, animations
 ```
+
+## Credits
+
+This template is derived from the blog system used by [Ruoduan](https://www.0x1ai.com/) on [0x1ai.com](https://www.0x1ai.com/) and is packaged as a reusable open-source starting point for clean personal publishing.
 
 ## License
 

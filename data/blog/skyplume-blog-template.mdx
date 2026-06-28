@@ -1,0 +1,124 @@
+---
+title: Skyplume Blog Template — A Calm, Fast, SEO-Ready Next.js Blog Starter
+date: '2026-06-29'
+tags:
+  - Next.js
+  - MDX
+  - SEO
+  - Open Source
+categories:
+  - Open Source
+draft: false
+summary: >-
+  Skyplume is an open-source Next.js blog template extracted from the production
+  blog experience behind Ruoduan's 0x1ai.com, built for thoughtful writing,
+  clean design, strong SEO foundations, and Lighthouse-friendly performance.
+images:
+  - /static/blog/skyplume-blog-template/lighthouse.png
+authors:
+  - default
+---
+
+## Why Skyplume exists
+
+Skyplume is a content-first blog template for people who want a site that feels calm, fast, and serious without becoming hard to maintain. It is built for personal publishing, engineering notes, project write-ups, and long-form MDX posts.
+
+The template comes from the production blog experience behind [Ruoduan](https://www.0x1ai.com/)'s personal blog, [0x1ai.com](https://www.0x1ai.com/). Instead of starting from a blank demo, it packages the useful parts of a real writing system: App Router pages, MDX content, SEO metadata, RSS, local search, tags, dark mode, comments, and a restrained interface that keeps the article in front.
+
+## What makes it different
+
+Skyplume is not trying to be a CMS, a landing page kit, or a dashboard theme. It is a focused blog starter with a small number of strong opinions:
+
+- Writing should happen in plain MDX files.
+- Site identity should be configured through simple data files.
+- SEO should be part of the architecture, not a late checklist.
+- Motion should support navigation and rhythm, not distract from reading.
+- The template should remain understandable after you customize it.
+
+That last point matters. A blog is usually maintained over years, not days. If the structure is too clever, every small change becomes expensive. Skyplume keeps customization close to the files you already expect: `data/siteMetadata.js`, `data/profile.ts`, `data/authors/default.mdx`, `data/headerNavLinks.ts`, and the posts inside `data/blog`.
+
+## Built for MDX publishing
+
+Posts live in `data/blog` and are processed by Contentlayer. Each article can define title, date, tags, categories, summary, authors, draft status, images, layout, bibliography, and canonical URL fields.
+
+The MDX pipeline supports the features a technical blog usually needs:
+
+- GitHub-flavored Markdown
+- Code titles and syntax highlighting
+- Math rendering with KaTeX
+- Citations
+- GitHub-style alert blocks
+- Heading anchors
+- Table of contents extraction
+- Custom image, iframe, table, and newsletter components
+
+That gives you the comfort of Markdown with enough React flexibility for custom content blocks.
+
+## SEO foundations are included
+
+Skyplume ships with practical SEO defaults across the App Router setup. The root layout defines site-wide metadata, Open Graph defaults, Twitter card settings, robots directives, RSS alternates, and canonical behavior. Individual pages can use the shared metadata helper, while blog posts generate article-specific metadata from their MDX front matter.
+
+The template also includes JSON-LD `BlogPosting` data, a generated sitemap, a generated RSS feed, a `robots.txt` route, local search output, and clean summaries that work across cards, feeds, and search snippets.
+
+The baseline template has been tuned for Lighthouse 100/100/100 across Performance, Best Practices, and SEO. Final scores still depend on the content and services you add, especially remote images, analytics, comments, embeds, and hosting configuration.
+
+![Lighthouse scores showing 100 for Performance, Best Practices, and SEO](/static/blog/skyplume-blog-template/lighthouse.png)
+
+## Design philosophy
+
+The interface is intentionally quiet. Skyplume uses focused content width, clear type hierarchy, restrained borders, and dark mode support so readers can move through posts without fighting the layout.
+
+The home page introduces the site quickly, then gets out of the way. Blog lists favor date, title, tags, summary, and a clear reading path. Article pages keep metadata, author details, tags, comments, and previous/next links available without crowding the prose.
+
+## Theme color philosophy
+
+Skyplume uses a Mineral Teal palette: a low-chroma teal with a technical, lab-like temperament. It replaces warmer decorative accents with a cooler system that feels quiet, precise, and personal.
+
+The theme is designed around three rules:
+
+- Reading first: long-form text, lists, dividers, and metadata are carried by teal-tinted gray scales, keeping the article calm and readable.
+- Laboratory character: Mineral Teal appears only where recognition matters, such as links, focus rings, the progress bar, tags, and important states.
+- Dark-mode stability: near-black teal-gray surfaces and lighter primary accents keep hover states, links, and code details visible without glare.
+
+That restrained use of color gives the template a recognizable identity without turning every component into a brand surface.
+
+## Motion that stays lightweight
+
+The animation system is small and easy to reason about:
+
+- `PageTransition` adds a short fade-and-lift transition on route changes.
+- `ProgressBar` gives lightweight feedback during navigation.
+- `LabHero` uses staggered reveal on the first screen.
+- `PostFeed` reveals article rows as they enter the viewport.
+- `ScrollReveal` can be reused for page sections.
+- `css/animations.css` keeps keyframes in one place.
+
+These details make the template feel polished, but they do not introduce a heavy animation framework or a complicated interaction layer.
+
+## Features included out of the box
+
+Skyplume includes the baseline features needed for a modern personal blog:
+
+- Next.js 15 App Router, React 19, TypeScript, Tailwind CSS 4, and Contentlayer
+- MDX posts with reading time, table of contents, tags, categories, authors, drafts, and summaries
+- Blog index, pagination, tag pages, projects page, about page, and previous/next post links
+- Local search index generated at build time
+- RSS feed, sitemap, robots route, Open Graph, Twitter cards, and JSON-LD
+- Dark mode with system preference support
+- Optional Giscus comments
+- Security headers and long-term static asset cache headers
+- Static export support through `EXPORT=true`
+
+## Who should use it
+
+Skyplume is a good fit if you want a personal site that can grow into a serious publishing home. It works well for developers, founders, indie makers, researchers, and writers who want to publish technical notes, build logs, essays, release posts, or project case studies.
+
+It is also intentionally easy to fork. Replace the metadata, author profile, navigation, favicon, social image, and example post, then start writing in MDX.
+
+## About the author
+
+Skyplume is authored and open-sourced by [Ruoduan](https://www.0x1ai.com/), the maker behind [0x1ai.com](https://www.0x1ai.com/). The template is a reusable version of that blog system, cleaned up so other writers and builders can start from the same foundation.
+
+## Closing thought
+
+A strong blog template should not compete with your writing. It should make publishing easier, make discovery cleaner, and make the reading experience feel intentional. Skyplume is built around that idea: a fast, minimal, SEO-ready foundation that you can make your own.
