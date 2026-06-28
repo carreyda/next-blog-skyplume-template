@@ -6,9 +6,13 @@
 [![GitHub stars](https://img.shields.io/github/stars/ruoduan-hub/next-blog-skyplume-template?style=social)](https://github.com/ruoduan-hub/next-blog-skyplume-template/stargazers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-black.svg)](./LICENSE)
 
+![Skyplume Blog 品牌卡片，展示项目 logo 和核心技术栈](public/static/images/skyplume-card.svg)
+
 [English](./README.md)
 
 Skyplume 是一个开源博客模板，源于 [Ruoduan](https://www.0x1ai.com/) 的个人博客 [0x1ai.com](https://www.0x1ai.com/) 的真实生产体验。它保留了一个认真维护的个人站点真正需要的部分：快速加载、清晰排版、良好的 SEO 默认配置、MDX 写作、RSS、站点地图、本地搜索、标签、暗色模式、细腻动画，以及易于二次定制的项目结构。
+
+![Skyplume 博客模板首页截图，展示了简洁导航、首屏介绍、文章列表和内容优先的排版风格](intro/demo-blog.png)
 
 ## 链接
 

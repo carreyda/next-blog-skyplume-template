@@ -6,9 +6,13 @@
 [![GitHub stars](https://img.shields.io/github/stars/ruoduan-hub/next-blog-skyplume-template?style=social)](https://github.com/ruoduan-hub/next-blog-skyplume-template/stargazers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-black.svg)](./LICENSE)
 
+![Skyplume Blog brand card with the project logo and core template stack](public/static/images/skyplume-card.svg)
+
 [简体中文](./README.zh-CN.md)
 
 Skyplume is an open-source blog template extracted from [Ruoduan](https://www.0x1ai.com/)'s personal blog at [0x1ai.com](https://www.0x1ai.com/). It keeps the parts that matter for a serious personal site: fast pages, clean typography, strong SEO defaults, MDX authoring, RSS, sitemap, local search, tags, dark mode, animated details, and an architecture that is easy to customize.
+
+![Skyplume Blog homepage screenshot showing the clean navigation, hero section, post feed, and content-first layout](intro/demo-blog.png)
 
 ## Links
 
